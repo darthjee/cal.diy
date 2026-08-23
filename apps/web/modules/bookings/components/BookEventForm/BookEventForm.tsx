@@ -4,6 +4,7 @@ import { useBookerStoreContext } from "@calcom/features/bookings/Booker/BookerSt
 import { useBookerTime } from "@calcom/features/bookings/Booker/hooks/useBookerTime";
 import type { UseBookingFormReturnType } from "@calcom/features/bookings/Booker/hooks/useBookingForm";
 import { formatEventFromTime } from "@calcom/features/bookings/Booker/utils/dates";
+import { isOutsideBusinessHours } from "@calcom/features/bookings/Booker/utils/isOutsideBusinessHours";
 import type { BookerEvent } from "@calcom/features/bookings/types";
 import ServerTrans from "@calcom/lib/components/ServerTrans";
 import { APP_NAME, WEBSITE_PRIVACY_POLICY_URL, WEBSITE_TERMS_URL } from "@calcom/lib/constants";
@@ -88,6 +89,11 @@ export const BookEventForm = ({
     if (!eventType) return "USD";
     return getPaymentAppData(eventType)?.currency || "USD";
   }, [eventType]);
+
+  const isSlotOutsideBusinessHours = useMemo(() => {
+    if (!timeslot) return false;
+    return isOutsideBusinessHours(timeslot, timezone);
+  }, [timeslot, timezone]);
 
   if (eventQuery.isError) return <Alert severity="warning" message={t("error_booking_event")} />;
   if (eventQuery.isPending || !eventQuery.data) return <FormSkeleton />;
@@ -174,6 +180,16 @@ export const BookEventForm = ({
           </div>
         ) : null}
 
+        {isSlotOutsideBusinessHours && (
+          <div data-testid="outside-business-hours-warning">
+            <Alert
+              severity="info"
+              title={t("outside_business_hours_title")}
+              message={t("outside_business_hours_warning")}
+            />
+          </div>
+        )}
+
         {!isPlatform && (
           <div className="my-3 w-full text-xs text-subtle">
             <ServerTrans
@@ -202,7 +218,7 @@ export const BookEventForm = ({
 
         {isPlatformBookerEmbed && (
           <div className="my-3 w-full text-xs text-subtle">
-            {t("proceeding_agreement")}{" "}
+            {t("proceeding_agreement")} {" "}
             <Link
               className="text-emphasis hover:underline"
               key="terms"
@@ -210,7 +226,7 @@ export const BookEventForm = ({
               target="_blank">
               {t("terms")}
             </Link>{" "}
-            {t("and")}{" "}
+            {t("and")} {" "}
             <Link
               className="text-emphasis hover:underline"
               key="privacy"
