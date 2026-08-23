@@ -181,13 +181,12 @@ export const BookEventForm = ({
         ) : null}
 
         {isSlotOutsideBusinessHours && (
-          <div
-            data-testid="outside-business-hours-warning"
-            role="status"
-            aria-live="polite"
-            className="outside-business-hours-warning">
-            <strong>{t("outside_business_hours_title")}</strong>
-            <div>{t("outside_business_hours_warning")}</div>
+          <div data-testid="outside-business-hours-warning">
+            <Alert
+              severity="info"
+              title={t("outside_business_hours_title")}
+              message={t("outside_business_hours_warning")}
+            />
           </div>
         )}
 
@@ -254,7 +253,7 @@ export const BookEventForm = ({
             type="submit"
             color="primary"
             disabled={
-              ((!!shouldRenderCaptcha && !watchedCfToken) || isTimeslotUnavailable || confirmButtonDisabled)
+              (!!shouldRenderCaptcha && !watchedCfToken) || isTimeslotUnavailable || confirmButtonDisabled
             }
             loading={
               loadingStates.creatingBooking ||
@@ -266,10 +265,10 @@ export const BookEventForm = ({
             {rescheduleUid && bookingData
               ? t("reschedule")
               : renderConfirmNotVerifyEmailButtonCond
-              ? isPaidEvent
-                ? t("pay_and_book")
-                : t("confirm")
-              : t("verify_email_button")}
+                ? isPaidEvent
+                  ? t("pay_and_book")
+                  : t("confirm")
+                : t("verify_email_button")}
           </Button>
         </div>
       </Form>
