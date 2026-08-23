@@ -2,7 +2,13 @@
 *** Begin Patch
 *** Update File: apps/web/modules/bookings/components/BookEventForm/BookEventForm.tsx
 @@
--import { formatEventFromTime } from "@calcom/features/bookings/Booker/utils/dates";
-+import { formatEventFromTime } from "@calcom/features/bookings/Booker/utils/dates";
-+import { isOutsideBusinessHours } from "@calcom/features/bookings/Booker/utils/isOutsideBusinessHours";
+   const paymentCurrency = useMemo(() => {
+     if (!eventType) return "USD";
+     return getPaymentAppData(eventType)?.currency || "USD";
+   }, [eventType]);
++
++  const isSlotOutsideBusinessHours = useMemo(() => {
++    if (!timeslot) return false;
++    return isOutsideBusinessHours(timeslot, timezone);
++  }, [timeslot, timezone]);
 *** End Patch
